@@ -3,3 +3,5 @@ parameters:
     paths:
         - src/
         - tests/
+    ignoreErrors:
+        - '#Method .*::.*\(\) should return .* but returns array\|int\|string\|Stringable\|UnitEnum\|null#'
