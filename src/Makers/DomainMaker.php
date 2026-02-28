@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Makers;
+
+use Tempest\Core\PublishesFiles;
+use Tempest\Discovery\SkipDiscovery;
+use Tempest\Generation\Php\{ClassManipulator, DataObjects\StubFile};
+use Tempest\Console\{ConsoleArgument, ConsoleCommand, Stubs\CommandStub};
+
+use function Tempest\root_path;
+use function Tempest\Support\Path\to_relative_path;
+
+final class DomainMaker
+{
+    use PublishesFiles;
+
+    #[ConsoleCommand(name: 'make:domain')]
+    public function __invoke(
+        #[ConsoleArgument(description: 'The domain\'s name to create.')]
+        string $domainName
+    ): void
+    {
+        $targetPath = $this->promptDirectoryPath($domainName);
+
+        $this->stubFileGenerator->generateClassFile(
+            stubFile: StubFile::from(Stubs\ControllerStub::class),
+            targetPath: $targetPath . '/Controllers/' . $domainName . 'Controller.php',
+            manipulations: [
+                fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
+            ]
+        );
+
+        $this->stubFileGenerator->generateClassFile(
+            stubFile: StubFile::from(CommandStub::class),
+            targetPath: $targetPath . '/Commands/' . $domainName . 'Command.php',
+            manipulations: [
+                fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
+            ]
+        );
+
+        $this->console->writeln();
+        $this->console->success(sprintf('Domain successfully created at the %s directory.', $targetPath));
+    }
+
+    /**
+     * Prompt the user for the directory path where the domain should be created.
+     *
+     * @param string $domainName The domain name.
+     *
+     * @return string The directory path.
+     */
+    private function promptDirectoryPath(string $domainName): string
+    {
+        $path = str_replace('.php', '', $this->getSuggestedPath($domainName, pathPrefix: 'Domains'));
+
+        return $this->console->ask(
+            question: 'Where would you like to create the domain?',
+            default: to_relative_path(root_path(), $path)
+        );
+    }
+}
