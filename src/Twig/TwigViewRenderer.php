@@ -26,6 +26,11 @@ readonly class TwigViewRenderer implements ViewRenderer
         return trim($this->twig->render($view->path, $view->data));
     }
 
+    /**
+     * Returns an array of Twig class extensions.
+     *
+     * @return class-string[]
+     */
     private function getAttributeExtensions(): array
     {
         return [
