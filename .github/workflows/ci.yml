@@ -111,4 +111,4 @@ jobs:
           restore-keys: composer-
 
       - name: Run tests
-        run: composer phpunit
+        run: composer test
