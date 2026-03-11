@@ -21,8 +21,8 @@ final class DomainMaker
 
     #[ConsoleCommand(
         name: 'make:domain',
-        description: 'Creates a new domain with a controller and command')
-    ]
+        description: 'Creates a new domain with a controller and command'
+    )]
     public function __invoke(#[ConsoleArgument(description: 'The domain\'s name to create.')] string $domainName): void
     {
         $targetPath = $this->promptDirectoryPath($domainName);
