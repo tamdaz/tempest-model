@@ -9,7 +9,7 @@ use Tempest\View\View;
 
 use function Tempest\View\view;
 
-final readonly class PageController
+final class PageController
 {
     #[Get(uri: '/')]
     public function index(): View

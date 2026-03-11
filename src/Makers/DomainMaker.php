@@ -19,7 +19,10 @@ final class DomainMaker
 {
     use PublishesFiles;
 
-    #[ConsoleCommand(name: 'make:domain')]
+    #[ConsoleCommand(
+        name: 'make:domain',
+        description: 'Creates a new domain with a controller and command')
+    ]
     public function __invoke(#[ConsoleArgument(description: 'The domain\'s name to create.')] string $domainName): void
     {
         $targetPath = $this->promptDirectoryPath($domainName);
@@ -55,9 +58,11 @@ final class DomainMaker
     {
         $path = str_replace('.php', '', $this->getSuggestedPath($domainName, pathPrefix: 'Domains'));
 
-        return $this->console->ask(
+        $answer = $this->console->ask(
             question: 'Where would you like to create the domain?',
             default: to_relative_path(root_path(), $path)
         );
+
+        return is_string($answer) ? $answer : '';
     }
 }

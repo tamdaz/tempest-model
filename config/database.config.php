@@ -12,5 +12,5 @@ use function Tempest\root_path;
  * @see <URL>
  */
 return new SQLiteConfig(
-    path: root_path(env('DATABASE_PATH', 'tmp/database.sqlite3'))
+    path: root_path((string) env('DATABASE_PATH', 'tmp/database.sqlite3'))
 );
