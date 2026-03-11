@@ -17,10 +17,9 @@ on:
 
 jobs:
   setup:
-    name: Audit & Install
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
@@ -32,7 +31,7 @@ jobs:
         run: composer audit --locked
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
@@ -42,11 +41,10 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
   format:
-    name: Code Format
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
@@ -55,7 +53,7 @@ jobs:
           tools: composer
 
       - name: Restore Composer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
@@ -65,11 +63,10 @@ jobs:
         run: vendor/bin/mago format --check || vendor/bin/mago format --dry-run
 
   lint:
-    name: Lint & Static Analysis
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
@@ -78,7 +75,7 @@ jobs:
           tools: composer
 
       - name: Restore Composer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
@@ -87,15 +84,14 @@ jobs:
       - name: Run Mago linter
         run: vendor/bin/mago lint
 
-      - name: Check code style
+      - name: Check the code style
         run: composer lint
 
   tests:
-    name: Unit Tests
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
@@ -103,14 +99,14 @@ jobs:
           php-version: "8.5"
           tools: composer
 
-      - name: Restore Composer cache
-        uses: actions/cache@v4
+      - name: Restore the Composer cache
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
 
-      - name: Generate the app key
+      - name: Generate the key
         run: php tempest key:generate
 
       - name: Run tests
