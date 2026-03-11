@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Tests;
+namespace Tests\Controllers;
 
 use PHPUnit\Framework\Attributes\Test;
+use Tests\IntegrationTestCase;
 
 /**
  * @internal
  */
-final class HomeControllerTest extends IntegrationTestCase
+final class PageControllerTest extends IntegrationTestCase
 {
     #[Test]
-    public function index_is_reachable(): void
+    public function homepage_is_reachable(): void
     {
         $this->http
             ->get('/')
