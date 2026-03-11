@@ -11,5 +11,5 @@ use Tempest\Database\Config\SQLiteConfig;
  * @see <URL>
  */
 return new SQLiteConfig(
-    path: root_path(env('DATABASE_PATH')),
+    path: root_path(env('DATABASE_PATH', 'tmp/database.sqlite3')),
 );
