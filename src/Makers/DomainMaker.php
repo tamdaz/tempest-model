@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Makers;
 
+use Tempest\Console\ConsoleArgument;
+use Tempest\Console\ConsoleCommand;
+use Tempest\Console\Stubs\CommandStub;
 use Tempest\Core\PublishesFiles;
 use Tempest\Discovery\SkipDiscovery;
-use Tempest\Generation\Php\{ClassManipulator, DataObjects\StubFile};
-use Tempest\Console\{ConsoleArgument, ConsoleCommand, Stubs\CommandStub};
+use Tempest\Generation\Php\ClassManipulator;
+use Tempest\Generation\Php\DataObjects\StubFile;
 
 use function Tempest\root_path;
 use function Tempest\Support\Path\to_relative_path;
@@ -15,10 +20,7 @@ final class DomainMaker
     use PublishesFiles;
 
     #[ConsoleCommand(name: 'make:domain')]
-    public function __invoke(
-        #[ConsoleArgument(description: 'The domain\'s name to create.')]
-        string $domainName
-    ): void
+    public function __invoke(#[ConsoleArgument(description: 'The domain\'s name to create.')] string $domainName): void
     {
         $targetPath = $this->promptDirectoryPath($domainName);
 
@@ -26,7 +28,7 @@ final class DomainMaker
             stubFile: StubFile::from(Stubs\ControllerStub::class),
             targetPath: $targetPath . '/Controllers/' . $domainName . 'Controller.php',
             manipulations: [
-                fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
+                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class)
             ]
         );
 
@@ -34,7 +36,7 @@ final class DomainMaker
             stubFile: StubFile::from(CommandStub::class),
             targetPath: $targetPath . '/Commands/' . $domainName . 'Command.php',
             manipulations: [
-                fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
+                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class)
             ]
         );
 

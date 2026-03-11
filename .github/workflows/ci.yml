@@ -16,8 +16,8 @@ on:
       - "composer.lock"
 
 jobs:
-  format:
-    name: Code Format
+  setup:
+    name: Audit & Install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,33 +41,48 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Check code format
-        run: vendor/bin/mago format --check
-
-  lint:
-    name: Lint & Static Analysis
+  format:
+    name: Code Format
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
           tools: composer
 
-      - name: Audit dependencies
-        run: composer audit --locked
-
-      - name: Cache Composer dependencies
+      - name: Restore Composer cache
         uses: actions/cache@v4
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+      - name: Check code format
+        run: vendor/bin/mago format --check
+
+  lint:
+    name: Lint & Static Analysis
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          tools: composer
+
+      - name: Restore Composer cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
 
       - name: Run Mago linter
         run: vendor/bin/mago lint
@@ -77,28 +92,23 @@ jobs:
 
   tests:
     name: Unit Tests
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP 8.5
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
           tools: composer
 
-      - name: Check for vulnerabilities
-        run: composer audit --locked
-
-      - name: Cache Composer dependencies
+      - name: Restore Composer cache
         uses: actions/cache@v4
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
 
       - name: Run tests
         run: composer phpunit
