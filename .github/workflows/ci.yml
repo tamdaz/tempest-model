@@ -110,5 +110,8 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
 
+      - name: Generate the app key
+        run: php tempest key:generate
+
       - name: Run tests
         run: composer test
