@@ -28,8 +28,8 @@ halstead = { effort-threshold = 7000 }
 [analyzer]
 plugins = []
 find-unused-definitions = true
-find-unused-expressions = false
-analyze-dead-code = false
+find-unused-expressions = true
+analyze-dead-code = true
 memoize-properties = true
 allow-possibly-undefined-array-keys = true
 check-throws = false

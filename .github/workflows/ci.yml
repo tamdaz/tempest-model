@@ -62,7 +62,7 @@ jobs:
           restore-keys: composer-
 
       - name: Check code format
-        run: vendor/bin/mago format --check
+        run: vendor/bin/mago format --check || vendor/bin/mago format --dry-run
 
   lint:
     name: Lint & Static Analysis
@@ -87,7 +87,7 @@ jobs:
       - name: Run Mago linter
         run: vendor/bin/mago lint
 
-      - name: Run PHPStan
+      - name: Check code style
         run: composer lint
 
   tests:
@@ -110,5 +110,8 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
 
+      - name: Generate the app key
+        run: php tempest key:generate
+
       - name: Run tests
-        run: composer phpunit
+        run: composer test

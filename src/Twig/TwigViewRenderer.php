@@ -23,6 +23,10 @@ readonly class TwigViewRenderer implements ViewRenderer
             $this->twig->addExtension(new AttributeExtension($extension));
         }
 
+        if (is_string($view)) {
+            return trim($this->twig->render($view, []));
+        }
+
         return trim($this->twig->render($view->path, $view->data));
     }
 
