@@ -10,7 +10,7 @@ use Tempest\View\View;
 use function Tempest\View\view;
 
 /**
- * This is the controller that shows the app homepage.
+ * This is the PageController that shows the app homepage.
  */
 final class PageController
 {
