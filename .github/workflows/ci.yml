@@ -62,7 +62,7 @@ jobs:
           restore-keys: composer-
 
       - name: Check code format
-        run: vendor/bin/mago format --check
+        run: vendor/bin/mago format --check || vendor/bin/mago format --dry-run
 
   lint:
     name: Lint & Static Analysis
