@@ -13,8 +13,11 @@ use Tests\IntegrationTestCase;
 final class PageControllerTest extends IntegrationTestCase
 {
     #[Test]
-    public function homepage_is_reachable(): void
+    public function test_index_page(): void
     {
-        $this->http->get('/')->dd();
+        $this->http
+            ->get('/')
+            ->assertOk()
+            ->assertSee('Tempest');
     }
 }
