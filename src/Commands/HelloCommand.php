@@ -10,10 +10,8 @@ use Tempest\Console\ConsoleCommand;
 final readonly class HelloCommand
 {
     public function __construct(
-        private Console $console,
-    ) {
-        // ...
-    }
+        private Console $console
+    ) {}
 
     #[ConsoleCommand(name: 'hello:world')]
     public function world(): void

@@ -28,16 +28,16 @@ final class DomainMaker
             stubFile: StubFile::from(Stubs\ControllerStub::class),
             targetPath: $targetPath . '/Controllers/' . $domainName . 'Controller.php',
             manipulations: [
-                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
-            ],
+                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class)
+            ]
         );
 
         $this->stubFileGenerator->generateClassFile(
             stubFile: StubFile::from(CommandStub::class),
             targetPath: $targetPath . '/Commands/' . $domainName . 'Command.php',
             manipulations: [
-                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class),
-            ],
+                static fn (ClassManipulator $class) => $class->removeClassAttribute(SkipDiscovery::class)
+            ]
         );
 
         $this->console->writeln();

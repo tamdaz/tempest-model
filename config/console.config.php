@@ -9,5 +9,5 @@ use Tempest\Console\ConsoleConfig;
  * @see <URL>
  */
 return new ConsoleConfig(
-    name: '%-project-name-%',
+    name: '%-project-name-%'
 );

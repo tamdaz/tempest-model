@@ -6,8 +6,8 @@ use Tempest\View\Renderers\TwigConfig;
 
 return new TwigConfig(
     viewPaths: [
-        __DIR__ . '/../templates',
+        __DIR__ . '/../templates'
     ],
     cachePath: __DIR__ . '/../.tempest/cache/views',
-    debug: true,
+    debug: true
 );

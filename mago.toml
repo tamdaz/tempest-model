@@ -9,9 +9,13 @@ includes = ["vendor"]
 excludes = ["src/Twig/Extensions"]
 
 [formatter]
+preset = "laravel-pint"
 print-width = 120
 tab-width = 4
 use-tabs = false
+method-brace-style = "always-next-line"
+space-around-concatenation-binary-operator = true
+trailing-comma = false
 
 [linter]
 integrations = ["symfony", "phpunit", "tempest"]

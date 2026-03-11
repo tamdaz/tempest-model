@@ -14,7 +14,7 @@ use Twig\Extension\AttributeExtension;
 readonly class TwigViewRenderer implements ViewRenderer
 {
     public function __construct(
-        private Environment $twig,
+        private Environment $twig
     ) {}
 
     public function render(View|string $view): string
@@ -30,7 +30,7 @@ readonly class TwigViewRenderer implements ViewRenderer
     {
         return [
             DebugExtension::class,
-            RoutingExtension::class,
+            RoutingExtension::class
         ];
     }
 }

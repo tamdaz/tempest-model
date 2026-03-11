@@ -12,7 +12,7 @@ use Tempest\Discovery\SkipDiscovery;
 final readonly class CommandStub
 {
     public function __construct(
-        private Console $console,
+        private Console $console
     ) {}
 
     #[ConsoleCommand(name: 'dummy-command-slug')]
