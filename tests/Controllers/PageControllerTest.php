@@ -15,6 +15,6 @@ final class PageControllerTest extends IntegrationTestCase
     #[Test]
     public function homepage_is_reachable(): void
     {
-        $this->http->get('/')->assertOk();
+        $this->http->get('/')->assertOk()->dd();
     }
 }
