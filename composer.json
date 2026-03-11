@@ -2,9 +2,8 @@
     "name": "tempest/app",
     "type": "project",
     "require": {
-        "tempest/framework": "^3.0",
-        "twig/twig": "^3.23",
-        "tempest/view": "*"
+        "tempest/framework": "^3.3",
+        "twig/twig": "^3.23"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.5.8",
@@ -42,7 +41,8 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "carthage-software/mago": true
         }
     }
 }
