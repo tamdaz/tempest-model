@@ -9,7 +9,8 @@
     "require-dev": {
         "phpunit/phpunit": "^12.5.8",
         "phpstan/phpstan": "^2.1",
-        "symfony/var-dumper": "^7.4"
+        "symfony/var-dumper": "^7.4",
+        "carthage-software/mago": "^1.14.0"
     },
     "autoload": {
         "psr-4": {
@@ -32,10 +33,7 @@
             "@php ./vendor/bin/tempest discovery:generate --no-interaction"
         ],
         "phpunit": "vendor/bin/phpunit --display-warnings --display-skipped --display-deprecations --display-errors --display-notices",
-        "lint": "vendor/bin/phpstan",
-        "qa": [
-            "composer fmt"
-        ]
+        "lint": "vendor/bin/phpstan"
     },
     "license": "MIT",
     "minimum-stability": "dev",
