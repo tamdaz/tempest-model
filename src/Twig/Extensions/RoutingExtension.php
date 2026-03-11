@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Twig\Extensions;
 
+use Tempest\Reflection\MethodReflector;
 use Twig\Attribute\AsTwigFunction;
 
 use function Tempest\Router\uri;
@@ -22,10 +23,8 @@ class RoutingExtension
      * - route(HomeController::class) // for __invoke
      * - route([PostController::class, 'show'], id: 5)
      * 
-     * @param array|string $action Controller class and method or URI
+     * @param array{class-string, string}|string $action Controller class and method or URI
      * @param mixed ...$params Route parameters
-     *
-     * @return string
      */
     #[AsTwigFunction("route")]
     public static function route(array|string $action, mixed ...$params): string
@@ -35,26 +34,22 @@ class RoutingExtension
 
     /**
      * Generate a signed URL for a given route.
-     * 
-     * @param array|string $action Controller class and method or URI
-     * @param mixed ...$params Route parameters
      *
-     * @return string
+     * @param array{class-string,string}|string|MethodReflector $action Controller class and method or URI
+     * @param mixed ...$params Route parameters
      */
     #[AsTwigFunction("signed_route")]
-    public static function signedRoute(array|string $action, mixed ...$params): string
+    public static function signedRoute(array|string|MethodReflector $action, mixed ...$params): string
     {
         return signed_uri($action, ...$params);
     }
 
     /**
      * Generate a temporary signed URL that expires after a duration.
-     * 
-     * @param array|string $action Controller class and method or URI
+     *
+     * @param array{class-string, string}|string $action Controller class and method or URI
      * @param int $duration Duration in seconds
      * @param mixed ...$params Route parameters
-     *
-     * @return string
      */
     #[AsTwigFunction("temporary_signed_route")]
     public static function temporarySignedRoute(array|string $action, int $duration, mixed ...$params): string
@@ -64,11 +59,9 @@ class RoutingExtension
 
     /**
      * Check if the current URL matches the given action.
-     * 
-     * @param array|string $action Controller class and method or URI
-     * @param mixed ...$params Route parameters
      *
-     * @return bool
+     * @param array{class-string, string}|string $action Controller class and method or URI
+     * @param array<int, mixed>|string ...$params Route parameters
      */
     #[AsTwigFunction("is_current_route")]
     public static function isCurrentRoute(array|string $action, mixed ...$params): bool
@@ -78,11 +71,9 @@ class RoutingExtension
 
     /**
      * Get the current path.
-     * 
-     * @return string
      */
     #[AsTwigFunction("current_path")]
-    public static function currentPath(): string
+    public static function currentPath(): mixed
     {
         return $_SERVER['REQUEST_URI'] ?? '/';
     }
