@@ -15,7 +15,11 @@ readonly class TwigViewRenderer implements ViewRenderer
 {
     public function __construct(
         private Environment $twig
-    ) {}
+    ) {
+        if (!($twig->getLoader() instanceof ComponentLoader)) {
+            $twig->setLoader(new ComponentLoader($twig->getLoader()));
+        }
+    }
 
     public function render(View|string $view): string
     {
