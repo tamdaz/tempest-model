@@ -5,6 +5,8 @@ node_modules/
 vendor/
 
 /public/main.css
+/public/build/
+/public/vite-tempest
 /package-lock.json
 /.php-cs-fixer.cache
 
