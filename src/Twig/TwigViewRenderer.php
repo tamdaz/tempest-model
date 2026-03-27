@@ -6,6 +6,7 @@ namespace App\Twig;
 
 use App\Twig\Extensions\DebugExtension;
 use App\Twig\Extensions\RoutingExtension;
+use App\Twig\Extensions\ViteExtension;
 use Tempest\View\View;
 use Tempest\View\ViewRenderer;
 use Twig\Environment;
@@ -43,7 +44,8 @@ readonly class TwigViewRenderer implements ViewRenderer
     {
         return [
             DebugExtension::class,
-            RoutingExtension::class
+            RoutingExtension::class,
+            ViteExtension::class,
         ];
     }
 }
