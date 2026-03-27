@@ -6,6 +6,9 @@ namespace App\Twig\Extensions;
 
 use Twig\Attribute\AsTwigFunction;
 
+/**
+ * The Twig extension for debugging and utility functions.
+ */
 class DebugExtension
 {
     /**

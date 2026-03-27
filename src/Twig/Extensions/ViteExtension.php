@@ -10,6 +10,9 @@ use Twig\Attribute\AsTwigFunction;
 use function Tempest\root_path;
 use function Tempest\Vite\get_tags;
 
+/**
+ * The Twig extension for Vite integration.
+ */
 class ViteExtension
 {
     private static ?array $manifest = null;
@@ -21,11 +24,7 @@ class ViteExtension
      * development mode (HMR via vite-plugin-tempest) and production (hashed manifest).
      * No tags are emitted in test environments.
      *
-     * Usage in Twig:
-     * - All entrypoints: {{ vite_tags() }}
-     * - Specific entrypoints: {{ vite_tags('assets/css/app.entrypoint.css') }}
-     *
-     * @param string ...$entries Entrypoint paths (empty = all configured entrypoints)
+     * @param string ...$entries Entrypoint paths.
      */
     #[AsTwigFunction('vite_tags', isSafe: ['html'])]
     public static function viteTags(string ...$entries): string
@@ -42,8 +41,6 @@ class ViteExtension
     /**
      * Returns the public URL of an asset hashed in the Vite manifest.
      *
-     * Usage in Twig: {{ vite_asset('assets/images/logo.svg') }}
-     *
      * @param string $path Asset path relative to the project root
      */
     #[AsTwigFunction('vite_asset')]
@@ -58,6 +55,12 @@ class ViteExtension
         return '/build/' . $path;
     }
 
+    /**
+     * Loads and caches the Vite manifest file.
+     *
+     * @return array The manifest data. If the manifest file is missing or invalid,
+     * it returns an empty array.
+     */
     private static function getManifest(): array
     {
         if (self::$manifest !== null) {
