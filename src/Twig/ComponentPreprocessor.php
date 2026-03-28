@@ -46,7 +46,7 @@ final class ComponentPreprocessor
         // Self-closing tags first (simpler, no nested content)
         $source = preg_replace_callback(
             '/<twig:([A-Z][A-Za-z0-9]*)(\s[^>]*)?\s*\/>/s',
-            fn($m) => self::transformSelfClosing($m[1], $m[2] ?? ''),
+            static fn ($m) => self::transformSelfClosing($m[1], $m[2] ?? ''),
             $source,
         );
 
@@ -248,7 +248,7 @@ final class ComponentPreprocessor
 
         $content = preg_replace_callback(
             '/<twig:block\s+name="([\w-]+)">(.*?)<\/twig:block>/s',
-            function ($matches) use (&$blockDefinitions): string {
+            static function ($matches) use (&$blockDefinitions): string {
                 $blockDefinitions .= "{% block {$matches[1]} %}{$matches[2]}{% endblock %}";
                 return '';
             },
@@ -297,7 +297,7 @@ final class ComponentPreprocessor
         }
 
         $withParts = array_map(
-            fn($key, $attribute) => $attribute['dynamic'] ? "{$key}: {$attribute['value']}" : "{$key}: '{$attribute['value']}'",
+            static fn ($key, $attribute) => $attribute['dynamic'] ? "{$key}: {$attribute['value']}" : "{$key}: '{$attribute['value']}'",
             array_keys($attributes),
             $attributes,
         );
