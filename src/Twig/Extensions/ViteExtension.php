@@ -25,13 +25,19 @@ class ViteExtension
      * No tags are emitted in test environments.
      *
      * @param string ...$entries Entrypoint paths.
+     * @return string Rendered HTML tags for the entrypoints.
      */
     #[AsTwigFunction('vite_tags', isSafe: ['html'])]
     public static function viteTags(string ...$entries): string
     {
         try {
-            $tags = get_tags(array_values(array_filter($entries)) ?: null);
-        } catch (ViteException) {
+            $entrypoints = array_values(array_filter($entries));
+            if ($entrypoints === []) {
+                $entrypoints = null;
+            }
+
+            $tags = get_tags($entrypoints);
+        } catch (ViteException $e) {
             return '';
         }
 
@@ -41,7 +47,8 @@ class ViteExtension
     /**
      * Returns the public URL of an asset hashed in the Vite manifest.
      *
-     * @param string $path Asset path relative to the project root
+     * @param string $path Asset path relative to the project root.
+     * @return string Public URL for the asset.
      */
     #[AsTwigFunction('vite_asset')]
     public static function viteAsset(string $path): string
@@ -73,6 +80,14 @@ class ViteExtension
             return self::$manifest = [];
         }
 
-        return self::$manifest = json_decode((string) file_get_contents($manifestPath), true) ?? [];
+        $manifest = json_decode((string) file_get_contents($manifestPath), true);
+
+        if (!is_array($manifest)) {
+            $manifest = [];
+        }
+
+        self::$manifest = $manifest;
+
+        return self::$manifest;
     }
 }

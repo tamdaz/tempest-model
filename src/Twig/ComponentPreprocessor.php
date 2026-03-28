@@ -34,6 +34,12 @@ namespace App\Twig;
  */
 final class ComponentPreprocessor
 {
+    private const string SELF_CLOSING_COMPONENT_PATTERN = '/<twig:([A-Z][A-Za-z0-9]*)(\s[^>]*)?\s*\/>/s';
+    private const string OPENING_COMPONENT_PATTERN = '/<twig:([A-Z][A-Za-z0-9]*)(\s[^>]*)?>/';
+    private const string OPENING_COMPONENT_SEARCH_PATTERN = '/<twig:%s[\s>]/';
+    private const string CLOSING_COMPONENT_SEARCH_PATTERN = '/<\/twig:%s>/';
+    private const string NAMED_BLOCK_PATTERN = '/<twig:block\s+name="([\w-]+)">(.*?)<\/twig:block>/s';
+
     /**
      * Preprocesses the Twig template source, transforming component tags into directives.
      * Processes self-closing tags first, then block tags recursively.
@@ -44,11 +50,21 @@ final class ComponentPreprocessor
     public static function process(string $source): string
     {
         // Self-closing tags first (simpler, no nested content)
-        $source = preg_replace_callback(
-            '/<twig:([A-Z][A-Za-z0-9]*)(\s[^>]*)?\s*\/>/s',
-            static fn ($m) => self::transformSelfClosing($m[1], $m[2] ?? ''),
+        $processedSource = preg_replace_callback(
+            self::SELF_CLOSING_COMPONENT_PATTERN,
+            static function (array $matches): string {
+                $attributesString = '';
+                if (array_key_exists(2, $matches)) {
+                    $attributesString = $matches[2];
+                }
+
+                return self::transformSelfClosing($matches[1], $attributesString);
+            },
             $source,
         );
+        if ($processedSource !== null) {
+            $source = $processedSource;
+        }
 
         // Block tags (may nest: process recursively via string scanning)
         return self::processBlockTags($source);
@@ -63,8 +79,7 @@ final class ComponentPreprocessor
      */
     private static function transformSelfClosing(string $componentName, string $attributesString): string
     {
-        $withVariables = self::buildWith(self::parseAttributes($attributesString));
-        $withClause = $withVariables ? " with { {$withVariables} }" : '';
+        $withClause = ComponentAttributes::formatWithClause($attributesString);
 
         return "{% include 'components/{$componentName}.html.twig'{$withClause} only %}";
     }
@@ -83,12 +98,15 @@ final class ComponentPreprocessor
         $sourceLength = strlen($source);
 
         while ($currentPos < $sourceLength) {
+            $tagMatches = [];
+
             // Find the next opening block tag (PascalCase = component, not <twig:block …>)
-            if (!preg_match('/<twig:([A-Z][A-Za-z0-9]*)(\s[^>]*)?>/', $source, $tagMatches, PREG_OFFSET_CAPTURE, $currentPos)) {
+            if (preg_match(self::OPENING_COMPONENT_PATTERN, $source, $tagMatches, PREG_OFFSET_CAPTURE, $currentPos) !== 1) {
                 $result .= substr($source, $currentPos);
                 break;
             }
 
+            /** @var array{0: array{0: string, 1: int}, 1: array{0: string, 1: int}, 2?: array{0: string, 1: int}} $tagMatches */
             [$textBefore, $tagInfo, $closeTagPositions] = self::processOpeningTag(
                 $source,
                 $currentPos,
@@ -120,13 +138,19 @@ final class ComponentPreprocessor
      * @param string $source The full template source
      * @param int $startPos The position to start extracting from
      * @param array $tagMatches The regex match result from preg_match
-     * @return array{string, array, array|null} [textBefore, tagInfo, closeTagPositions]
+     * @return array{0: string, 1: array{name: string, attributes: string, openingContent: string, contentStart: int}, 2: array{0: int, 1: int}|null} [textBefore, tagInfo, closeTagPositions]
      */
     private static function processOpeningTag(string $source, int $startPos, array $tagMatches): array
     {
-        $openingTagStart = $tagMatches[0][1];
+        /** @var array{0: array{0: string, 1: int}, 1: array{0: string, 1: int}, 2?: array{0: string, 1: int}} $tagMatches */
+        $openingTagStart = (int) $tagMatches[0][1];
         $componentName = $tagMatches[1][0];
-        $attributesString = $tagMatches[2][0] ?? '';
+
+        if (array_key_exists(2, $tagMatches) && array_key_exists(0, $tagMatches[2])) {
+            $attributesString = $tagMatches[2][0];
+        } else {
+            $attributesString = '';
+        }
         $openingTagContent = $tagMatches[0][0];
         $contentStart = $openingTagStart + strlen($openingTagContent);
 
@@ -176,6 +200,7 @@ final class ComponentPreprocessor
             } else {
                 $nestingDepth--;
                 if ($nestingDepth === 0) {
+                    /** @var array{0: array{0: string, 1: int}} $closingMatch */
                     return [$nextClosingPos, $nextClosingPos + strlen($closingMatch[0][0])];
                 }
                 $currentPos = $nextClosingPos + 1;
@@ -194,21 +219,22 @@ final class ComponentPreprocessor
      * @param int $currentPos The position to start searching from
      * @return array{int|null, int|null, array|null} [openingPos, closingPos, closingMatch]
      */
-    private static function findNextTags(
-        string $source,
-        string $componentName,
-        int $currentPos
-    ): array {
+    private static function findNextTags(string $source, string $componentName, int $currentPos): array {
         $nextOpeningPos = null;
         $nextClosingPos = null;
         $closingMatch = null;
+        $openingMatch = [];
+        $closingTagMatch = [];
 
-        if (preg_match("/<twig:{$componentName}[\s>]/", $source, $openingMatch, PREG_OFFSET_CAPTURE, $currentPos)) {
-            $nextOpeningPos = $openingMatch[0][1];
+        $openingPattern = sprintf(self::OPENING_COMPONENT_SEARCH_PATTERN, $componentName);
+        $closingPattern = sprintf(self::CLOSING_COMPONENT_SEARCH_PATTERN, $componentName);
+
+        if (preg_match($openingPattern, $source, $openingMatch, PREG_OFFSET_CAPTURE, $currentPos) === 1) {
+            $nextOpeningPos = (int) $openingMatch[0][1];
         }
 
-        if (preg_match("/<\\/twig:{$componentName}>/", $source, $closingTagMatch, PREG_OFFSET_CAPTURE, $currentPos)) {
-            $nextClosingPos = $closingTagMatch[0][1];
+        if (preg_match($closingPattern, $source, $closingTagMatch, PREG_OFFSET_CAPTURE, $currentPos) === 1) {
+            $nextClosingPos = (int) $closingTagMatch[0][1];
             $closingMatch = $closingTagMatch;
         }
 
@@ -226,8 +252,7 @@ final class ComponentPreprocessor
      */
     private static function transformBlock(string $componentName, string $attributesString, string $content): string
     {
-        $withVariables = self::buildWith(self::parseAttributes($attributesString));
-        $withClause = $withVariables ? " with { {$withVariables} }" : '';
+        $withClause = ComponentAttributes::formatWithClause($attributesString);
 
         $blockDefinitions = self::extractNamedBlocks($content);
 
@@ -246,8 +271,8 @@ final class ComponentPreprocessor
     {
         $blockDefinitions = '';
 
-        $content = preg_replace_callback(
-            '/<twig:block\s+name="([\w-]+)">(.*?)<\/twig:block>/s',
+        $updatedContent = preg_replace_callback(
+            self::NAMED_BLOCK_PATTERN,
             static function ($matches) use (&$blockDefinitions): string {
                 $blockDefinitions .= "{% block {$matches[1]} %}{$matches[2]}{% endblock %}";
                 return '';
@@ -255,53 +280,15 @@ final class ComponentPreprocessor
             $content,
         );
 
+        if ($updatedContent !== null) {
+            $content = $updatedContent;
+        }
+
         // Remaining non-empty content becomes the default "content" block
         if (trim($content) !== '') {
             $blockDefinitions .= "{% block content %}{$content}{% endblock %}";
         }
 
         return $blockDefinitions;
-    }
-
-    /**
-     * Parses component attributes from the raw attribute string.
-     * Supports static (prop="value") and dynamic (:prop="expr") binding.
-     *
-     * @param string $attributesString Raw attribute string (e.g., 'label="Click" :disabled="isLoading"')
-     * @return array<string, array{dynamic: bool, value: string}> Parsed attributes keyed by name
-     */
-    private static function parseAttributes(string $attributesString): array
-    {
-        $parsedAttributes = [];
-        preg_match_all('/(:?[\w-]+)="([^"]*)"/', $attributesString, $matches, PREG_SET_ORDER);
-
-        foreach ($matches as $match) {
-            $isDynamic = str_starts_with($match[1], ':');
-            $parsedAttributes[ltrim($match[1], ':')] = ['dynamic' => $isDynamic, 'value' => $match[2]];
-        }
-
-        return $parsedAttributes;
-    }
-
-    /**
-     * Builds a Twig variable binding string from parsed attributes.
-     * Static attributes are quoted (key: 'value'), dynamic attributes are unquoted (key: expr).
-     *
-     * @param array<string, array{dynamic: bool, value: string}> $attributes Parsed attributes
-     * @return string The formatted variable binding string for Twig's "with" clause
-     */
-    private static function buildWith(array $attributes): string
-    {
-        if ($attributes === []) {
-            return '';
-        }
-
-        $withParts = array_map(
-            static fn ($key, $attribute) => $attribute['dynamic'] ? "{$key}: {$attribute['value']}" : "{$key}: '{$attribute['value']}'",
-            array_keys($attributes),
-            $attributes,
-        );
-
-        return implode(', ', $withParts);
     }
 }

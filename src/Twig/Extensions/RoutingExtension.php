@@ -72,6 +72,10 @@ class RoutingExtension
     #[AsTwigFunction("current_path")]
     public static function currentPath(): mixed
     {
-        return $_SERVER['REQUEST_URI'] ?? '/';
+        if (!array_key_exists('REQUEST_URI', $_SERVER) || $_SERVER['REQUEST_URI'] === null) {
+            return '/';
+        }
+
+        return $_SERVER['REQUEST_URI'];
     }
 }
