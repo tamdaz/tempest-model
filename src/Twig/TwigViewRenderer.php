@@ -24,8 +24,9 @@ readonly class TwigViewRenderer implements ViewRenderer
      */
     public function __construct(
         private Environment $twig
-    ) {
-        if (!($twig->getLoader() instanceof ComponentLoader)) {
+    )
+    {
+        if (! $twig->getLoader() instanceof ComponentLoader) {
             $twig->setLoader(new ComponentLoader($twig->getLoader()));
         }
     }
@@ -62,7 +63,7 @@ readonly class TwigViewRenderer implements ViewRenderer
         return [
             DebugExtension::class,
             RoutingExtension::class,
-            ViteExtension::class,
+            ViteExtension::class
         ];
     }
 }

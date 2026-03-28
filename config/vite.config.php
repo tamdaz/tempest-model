@@ -7,6 +7,6 @@ use Tempest\Vite\ViteConfig;
 return new ViteConfig(
     entrypoints: [
         'assets/css/app.css',
-        'assets/js/app.js',
-    ],
+        'assets/js/app.js'
+    ]
 );

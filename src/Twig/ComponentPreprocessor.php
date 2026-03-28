@@ -60,8 +60,9 @@ final class ComponentPreprocessor
 
                 return self::transformSelfClosing($matches[1], $attributesString);
             },
-            $source,
+            $source
         );
+
         if ($processedSource !== null) {
             $source = $processedSource;
         }
@@ -121,7 +122,13 @@ final class ComponentPreprocessor
             }
 
             $result .= $textBefore;
-            $componentContent = substr($source, $tagInfo['contentStart'], $closeTagPositions[0] - $tagInfo['contentStart']);
+
+            $componentContent = substr(
+                $source,
+                $tagInfo['contentStart'],
+                $closeTagPositions[0] - $tagInfo['contentStart']
+            );
+
             $processedContent = self::processBlockTags($componentContent);
 
             $result .= self::transformBlock($tagInfo['name'], $tagInfo['attributes'], $processedContent);
@@ -160,7 +167,7 @@ final class ComponentPreprocessor
             'name' => $componentName,
             'attributes' => $attributesString,
             'openingContent' => $openingTagContent,
-            'contentStart' => $contentStart,
+            'contentStart' => $contentStart
         ];
 
         $closeTagPositions = self::findClosingTag($source, $componentName, $contentStart);
@@ -219,7 +226,8 @@ final class ComponentPreprocessor
      * @param int $currentPos The position to start searching from
      * @return array{int|null, int|null, array|null} [openingPos, closingPos, closingMatch]
      */
-    private static function findNextTags(string $source, string $componentName, int $currentPos): array {
+    private static function findNextTags(string $source, string $componentName, int $currentPos): array
+    {
         $nextOpeningPos = null;
         $nextClosingPos = null;
         $closingMatch = null;
@@ -275,9 +283,10 @@ final class ComponentPreprocessor
             self::NAMED_BLOCK_PATTERN,
             static function ($matches) use (&$blockDefinitions): string {
                 $blockDefinitions .= "{% block {$matches[1]} %}{$matches[2]}{% endblock %}";
+
                 return '';
             },
-            $content,
+            $content
         );
 
         if ($updatedContent !== null) {

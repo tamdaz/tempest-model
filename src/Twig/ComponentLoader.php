@@ -23,7 +23,9 @@ final readonly class ComponentLoader implements LoaderInterface
      *
      * @param LoaderInterface $inner Loader used to resolve template source.
      */
-    public function __construct(private LoaderInterface $inner) {}
+    public function __construct(
+        private LoaderInterface $inner
+    ) {}
 
     /**
      * Returns the preprocessed source context for a template.

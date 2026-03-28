@@ -10,7 +10,7 @@ excludes = ["src/Twig/Extensions"]
 
 [formatter]
 preset = "laravel-pint"
-print-width = 120
+print-width = 130
 tab-width = 4
 use-tabs = false
 method-brace-style = "always-next-line"
