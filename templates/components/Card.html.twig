@@ -1,0 +1,17 @@
+<div class="rounded-xl border border-gray-200 bg-white shadow-sm {{ class ?? '' }}">
+    {% if block('header') is not empty %}
+        <div class="border-b border-gray-200 px-6 py-4 font-semibold text-gray-900">
+            {% block header %}{% endblock %}
+        </div>
+    {% endif %}
+
+    <div class="px-6 py-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% if block('footer') is not empty %}
+        <div class="border-t border-gray-200 px-6 py-4 text-sm text-gray-500">
+            {% block footer %}{% endblock %}
+        </div>
+    {% endif %}
+</div>

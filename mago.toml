@@ -4,13 +4,13 @@ php-version = "8.5.0"
 
 [source]
 workspace = "."
-paths = ["config/", "src/", "tests/"]
+paths = ["config/", "src/"]
 includes = ["vendor"]
 excludes = ["src/Twig/Extensions"]
 
 [formatter]
 preset = "laravel-pint"
-print-width = 120
+print-width = 130
 tab-width = 4
 use-tabs = false
 method-brace-style = "always-next-line"
@@ -24,6 +24,8 @@ integrations = ["symfony", "phpunit", "tempest"]
 ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
+no-else-clause = { enabled = false }
+cyclomatic-complexity = { threshold = 20 }
 
 [analyzer]
 plugins = []

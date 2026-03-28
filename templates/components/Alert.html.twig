@@ -1,0 +1,9 @@
+<div role="alert" class="flex gap-3 rounded-lg border p-4 text-sm
+        {% if (type ?? 'info') == 'info' %}border-blue-200 bg-blue-50 text-blue-800
+        {% elseif type == 'success' %}border-green-200 bg-green-50 text-green-800
+        {% elseif type == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-800
+        {% elseif type == 'error' %}border-red-200 bg-red-50 text-red-800
+        {% endif %}">
+    <span class="font-semibold capitalize">{{ type ?? 'info' }}:</span>
+    <span>{% block content %}{% endblock %}</span>
+</div>

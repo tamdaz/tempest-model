@@ -1,1 +1,31 @@
-<h1>Tempest</h1>
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Accueil — Tempest{% endblock %}
+
+{% block content %}
+<main class="mx-auto flex max-w-2xl flex-col gap-6 p-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Tempest</h1>
+
+    {# Self-closing component with a default content slot (maps to {% embed %}) #}
+    <twig:Alert type="success">
+        Bienvenue sur votre application Tempest avec Twig &amp; Tailwind CSS.
+    </twig:Alert>
+
+    {# Component with named slots (maps to {% embed %} + {% block %}) #}
+    <twig:Card>
+        <twig:block name="header">Démarrage rapide</twig:block>
+
+        <p class="text-gray-600">
+            Créez un composant dans <code class="rounded bg-gray-100 px-1">templates/components/</code>
+            et utilisez-le avec la syntaxe balise HTML.
+        </p>
+    </twig:Card>
+
+    {# Self-closing with static and dynamic attributes (maps to {% include %}) #}
+    <div class="flex gap-3">
+        <twig:Button label="Primaire" />
+        <twig:Button label="Secondaire" variant="secondary" />
+        <twig:Button label="Danger" variant="danger" />
+    </div>
+</main>
+{% endblock %}

@@ -12,16 +12,13 @@ use function Tempest\Router\signed_uri;
 use function Tempest\Router\temporary_signed_uri;
 use function Tempest\Router\is_current_uri;
 
+/**
+ * The Twig extension for routing-related functions.
+ */
 class RoutingExtension
 {
     /**
      * Generate a URL for a given route.
-     *
-     * Examples:
-     * - route('/home')
-     * - route([HomeController::class, 'index'])
-     * - route(HomeController::class) // for __invoke
-     * - route([PostController::class, 'show'], id: 5)
      * 
      * @param array{class-string, string}|string $action Controller class and method or URI
      * @param mixed ...$params Route parameters
@@ -75,6 +72,10 @@ class RoutingExtension
     #[AsTwigFunction("current_path")]
     public static function currentPath(): mixed
     {
-        return $_SERVER['REQUEST_URI'] ?? '/';
+        if (!array_key_exists('REQUEST_URI', $_SERVER) || $_SERVER['REQUEST_URI'] === null) {
+            return '/';
+        }
+
+        return $_SERVER['REQUEST_URI'];
     }
 }
